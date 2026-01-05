@@ -18,9 +18,9 @@ const Navbar = () => {
   const { logoutMutation } = useLogout();
 
   return (
-    <nav className="bg-base-200/95 backdrop-blur-md border-b border-base-300/50 sticky top-0 z-30 h-16 flex items-center shadow-sm">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between w-full">
+    <nav className="bg-base-200/95 backdrop-blur-md border-b border-base-300/50 sticky top-0 z-40 h-16 shadow-sm">
+      <div className="w-full h-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-full">
           {/* LOGO - ONLY IN THE CHAT PAGE */}
           {isChatPage && (
             <div className="flex items-center">
@@ -42,7 +42,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 sm:gap-3 ml-auto">
             {/* Notification button */}
             <Link to="/notifications">
-              <button className="btn btn-ghost btn-circle hover:bg-base-300 transition-all duration-200 hover:scale-105">
+              <button className="btn btn-ghost btn-circle hover:bg-base-300 transition-colors duration-200">
                 <div className="indicator">
                   <BellIcon className="h-5 w-5 text-base-content/80" />
                   {/* Optional: Add notification badge */}
@@ -77,7 +77,7 @@ const Navbar = () => {
 
             {/* Logout button */}
             <button
-              className="btn btn-ghost btn-circle hover:bg-error/10 hover:text-error transition-all duration-200 hover:scale-105"
+              className="btn btn-ghost btn-circle hover:bg-error/10 hover:text-error transition-colors duration-200"
               onClick={logoutMutation}
               title="Logout"
             >

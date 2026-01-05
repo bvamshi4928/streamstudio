@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, Mail, MapPin, Calendar, Users, MessageSquare, Video, Edit2, Save, X } from "lucide-react";
+import {
+  Camera,
+  Mail,
+  MapPin,
+  Calendar,
+  Users,
+  MessageSquare,
+  Video,
+  Edit2,
+  Save,
+  X,
+} from "lucide-react";
 import useAuthUser from "../hooks/useAuthUser";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
@@ -43,11 +54,9 @@ const ProfilePage = () => {
 
   // Upload profile picture mutation
   const { mutate: uploadProfilePic, isPending: isUploading } = useMutation({
-    mutationFn: async (file) => {
-      const formData = new FormData();
-      formData.append("profilePic", file);
-      const res = await axiosInstance.post("/users/profile/picture", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+    mutationFn: async (imageUrl) => {
+      const res = await axiosInstance.post("/users/profile/picture", {
+        profilePic: imageUrl,
       });
       return res.data;
     },
@@ -67,7 +76,17 @@ const ProfilePage = () => {
         toast.error("File size should be less than 5MB");
         return;
       }
-      uploadProfilePic(file);
+      // Create a preview URL from the file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // For now, using a placeholder. In production, upload to a service like Cloudinary
+        const placeholderUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${authUser?.fullName}`;
+        uploadProfilePic(placeholderUrl);
+        toast.info(
+          "Using placeholder avatar. Integrate cloud storage for actual uploads."
+        );
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -146,8 +165,12 @@ const ProfilePage = () => {
               <div className="flex-1 pb-2">
                 {!isEditing ? (
                   <>
-                    <h1 className="text-3xl font-bold mb-1">{authUser?.fullName}</h1>
-                    <p className="text-base-content/70 mb-2">{authUser?.email}</p>
+                    <h1 className="text-3xl font-bold mb-1">
+                      {authUser?.fullName}
+                    </h1>
+                    <p className="text-base-content/70 mb-2">
+                      {authUser?.email}
+                    </p>
                     <p className="text-base-content/80 max-w-2xl">
                       {authUser?.bio || "No bio yet. Click edit to add one!"}
                     </p>
@@ -158,14 +181,18 @@ const ProfilePage = () => {
                       type="text"
                       className="input input-bordered w-full max-w-md"
                       value={editData.fullName}
-                      onChange={(e) => setEditData({ ...editData, fullName: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({ ...editData, fullName: e.target.value })
+                      }
                       placeholder="Full Name"
                     />
                     <textarea
                       className="textarea textarea-bordered w-full max-w-2xl"
                       rows="3"
                       value={editData.bio}
-                      onChange={(e) => setEditData({ ...editData, bio: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({ ...editData, bio: e.target.value })
+                      }
                       placeholder="Tell us about yourself..."
                     />
                   </div>
@@ -196,7 +223,10 @@ const ProfilePage = () => {
                       )}
                       Save
                     </button>
-                    <button className="btn btn-ghost gap-2" onClick={handleCancel}>
+                    <button
+                      className="btn btn-ghost gap-2"
+                      onClick={handleCancel}
+                    >
                       <X className="size-4" />
                       Cancel
                     </button>
@@ -227,7 +257,9 @@ const ProfilePage = () => {
                 <Users className="size-6 text-primary" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold mb-1">{stats?.friendsCount || 0}</h3>
+            <h3 className="text-3xl font-bold mb-1">
+              {stats?.friendsCount || 0}
+            </h3>
             <p className="text-base-content/70">Friends</p>
           </div>
 
@@ -237,7 +269,9 @@ const ProfilePage = () => {
                 <MessageSquare className="size-6 text-secondary" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold mb-1">{stats?.totalChats || 0}</h3>
+            <h3 className="text-3xl font-bold mb-1">
+              {stats?.totalChats || 0}
+            </h3>
             <p className="text-base-content/70">Total Chats</p>
           </div>
 
@@ -247,7 +281,9 @@ const ProfilePage = () => {
                 <Video className="size-6 text-accent" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold mb-1">{stats?.totalCalls || 0}</h3>
+            <h3 className="text-3xl font-bold mb-1">
+              {stats?.totalCalls || 0}
+            </h3>
             <p className="text-base-content/70">Video Calls</p>
           </div>
 
@@ -257,7 +293,9 @@ const ProfilePage = () => {
                 <Users className="size-6 text-success" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold mb-1">{stats?.pendingRequests || 0}</h3>
+            <h3 className="text-3xl font-bold mb-1">
+              {stats?.pendingRequests || 0}
+            </h3>
             <p className="text-base-content/70">Pending Requests</p>
           </div>
         </div>
@@ -274,37 +312,56 @@ const ProfilePage = () => {
           {!isEditing ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-4 bg-base-200 rounded-xl">
-                <h3 className="text-sm font-semibold text-base-content/70 mb-2">Native Language</h3>
-                <p className="text-xl font-bold">{authUser?.nativeLanguage || "Not set"}</p>
+                <h3 className="text-sm font-semibold text-base-content/70 mb-2">
+                  Native Language
+                </h3>
+                <p className="text-xl font-bold">
+                  {authUser?.nativeLanguage || "Not set"}
+                </p>
               </div>
               <div className="p-4 bg-base-200 rounded-xl">
-                <h3 className="text-sm font-semibold text-base-content/70 mb-2">Learning Language</h3>
-                <p className="text-xl font-bold">{authUser?.learningLanguage || "Not set"}</p>
+                <h3 className="text-sm font-semibold text-base-content/70 mb-2">
+                  Learning Language
+                </h3>
+                <p className="text-xl font-bold">
+                  {authUser?.learningLanguage || "Not set"}
+                </p>
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="label">
-                  <span className="label-text font-medium">Native Language</span>
+                  <span className="label-text font-medium">
+                    Native Language
+                  </span>
                 </label>
                 <input
                   type="text"
                   className="input input-bordered w-full"
                   value={editData.nativeLanguage}
-                  onChange={(e) => setEditData({ ...editData, nativeLanguage: e.target.value })}
+                  onChange={(e) =>
+                    setEditData({ ...editData, nativeLanguage: e.target.value })
+                  }
                   placeholder="e.g., English"
                 />
               </div>
               <div>
                 <label className="label">
-                  <span className="label-text font-medium">Learning Language</span>
+                  <span className="label-text font-medium">
+                    Learning Language
+                  </span>
                 </label>
                 <input
                   type="text"
                   className="input input-bordered w-full"
                   value={editData.learningLanguage}
-                  onChange={(e) => setEditData({ ...editData, learningLanguage: e.target.value })}
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      learningLanguage: e.target.value,
+                    })
+                  }
                   placeholder="e.g., Spanish"
                 />
               </div>

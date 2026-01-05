@@ -30,8 +30,8 @@ const Sidebar = () => {
           to="/"
           className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
             currentPath === "/"
-              ? "bg-primary text-primary-content shadow-lg scale-105"
-              : "hover:bg-base-300 hover:scale-105 hover:shadow-md"
+              ? "bg-primary text-primary-content shadow-md"
+              : "hover:bg-base-300 hover:shadow-sm"
           }`}
         >
           <HomeIcon
@@ -48,8 +48,8 @@ const Sidebar = () => {
           to="/friends"
           className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
             currentPath === "/friends"
-              ? "bg-primary text-primary-content shadow-lg scale-105"
-              : "hover:bg-base-300 hover:scale-105 hover:shadow-md"
+              ? "bg-primary text-primary-content shadow-md"
+              : "hover:bg-base-300 hover:shadow-sm"
           }`}
         >
           <UsersIcon
@@ -66,8 +66,8 @@ const Sidebar = () => {
           to="/notifications"
           className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
             currentPath === "/notifications"
-              ? "bg-primary text-primary-content shadow-lg scale-105"
-              : "hover:bg-base-300 hover:scale-105 hover:shadow-md"
+              ? "bg-primary text-primary-content shadow-md"
+              : "hover:bg-base-300 hover:shadow-sm"
           }`}
         >
           <div className="relative">
@@ -86,7 +86,7 @@ const Sidebar = () => {
       </nav>
 
       {/* USER PROFILE SECTION */}
-      <div className="p-4 border-t border-base-300/50 mt-auto bg-base-300/30">
+      <div className="p-4 border-t border-base-300 mt-auto">
         <Link
           to="/profile"
           className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-300/50 transition-all duration-200 group"

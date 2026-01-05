@@ -49,55 +49,65 @@ const HomePage = () => {
   }, [outgoingFriendReqs]);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="container mx-auto space-y-10">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Your Friends</h2>
-          <Link to="/notifications" className="btn btn-outline btn-sm">
-            <UsersIcon className="mr-2 size-4" />
-            Friend Requests
-          </Link>
+    <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        {/* Hero Section */}
+        <div className="bg-gradient-to-r from-primary to-secondary rounded-2xl p-6 sm:p-8 text-primary-content shadow-xl">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Welcome to StreamStudio! 👋</h1>
+          <p className="text-lg opacity-90">Connect, chat, and collaborate with people worldwide</p>
         </div>
 
-        {loadingFriends ? (
-          <div className="flex justify-center py-12">
-            <span className="loading loading-spinner loading-lg" />
-          </div>
-        ) : friends.length === 0 ? (
-          <NoFriendsFound />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {friends.map((friend) => (
-              <FriendCard key={friend._id} friend={friend} />
-            ))}
-          </div>
-        )}
-
-        <section>
-          <div className="mb-6 sm:mb-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Meet New Learners</h2>
-                <p className="opacity-70">
-                  Discover perfect language exchange partners based on your profile
-                </p>
-              </div>
+        {/* Friends Section */}
+        <div className="bg-base-100 rounded-2xl shadow-lg p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Your Friends</h2>
+              <p className="text-base-content/70">Stay connected with your network</p>
             </div>
+            <Link to="/notifications" className="btn btn-primary gap-2">
+              <UsersIcon className="size-4" />
+              Friend Requests
+            </Link>
+          </div>
+
+          {loadingFriends ? (
+            <div className="flex justify-center py-12">
+              <span className="loading loading-spinner loading-lg text-primary" />
+            </div>
+          ) : friends.length === 0 ? (
+            <NoFriendsFound />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {friends.map((friend) => (
+                <FriendCard key={friend._id} friend={friend} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recommended Users Section */}
+        <div className="bg-base-100 rounded-2xl shadow-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Discover New People</h2>
+            <p className="text-base-content/70">
+              Connect with amazing people and expand your network
+            </p>
           </div>
 
           {loadingUsers ? (
             <div className="flex justify-center py-12">
-              <span className="loading loading-spinner loading-lg" />
+              <span className="loading loading-spinner loading-lg text-primary" />
             </div>
           ) : recommendedUsers.length === 0 ? (
-            <div className="card bg-base-200 p-6 text-center">
-              <h3 className="font-semibold text-lg mb-2">No recommendations available</h3>
-              <p className="text-base-content opacity-70">
-                Check back later for new language partners!
+            <div className="bg-base-200 rounded-xl p-8 text-center">
+              <UsersIcon className="size-16 mx-auto mb-4 text-base-content/30" />
+              <h3 className="font-semibold text-xl mb-2">No recommendations available</h3>
+              <p className="text-base-content/70">
+                Check back later for new connections!
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {recommendedUsers.map((user) => {
                 const hasRequestBeenSent = outgoingRequestsIds.has(user._id);
 
@@ -163,10 +173,9 @@ const HomePage = () => {
               })}
             </div>
           )}
-        </section>
+        </div>
       </div>
     </div>
   );
 };
-
 export default HomePage;
