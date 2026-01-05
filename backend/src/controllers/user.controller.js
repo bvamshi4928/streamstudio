@@ -24,7 +24,10 @@ export async function getMyFriends(req, res) {
   try {
     const user = await User.findById(req.user.id)
       .select("friends")
-      .populate("friends", "fullName profilePic nativeLanguage learningLanguage");
+      .populate(
+        "friends",
+        "fullName profilePic nativeLanguage learningLanguage"
+      );
 
     res.status(200).json(user.friends);
   } catch (error) {
@@ -40,7 +43,9 @@ export async function sendFriendRequest(req, res) {
 
     // prevent sending req to yourself
     if (myId === recipientId) {
-      return res.status(400).json({ message: "You can't send friend request to yourself" });
+      return res
+        .status(400)
+        .json({ message: "You can't send friend request to yourself" });
     }
 
     const recipient = await User.findById(recipientId);
@@ -50,7 +55,9 @@ export async function sendFriendRequest(req, res) {
 
     // check if user is already friends
     if (recipient.friends.includes(myId)) {
-      return res.status(400).json({ message: "You are already friends with this user" });
+      return res
+        .status(400)
+        .json({ message: "You are already friends with this user" });
     }
 
     // check if a req already exists
@@ -64,7 +71,9 @@ export async function sendFriendRequest(req, res) {
     if (existingRequest) {
       return res
         .status(400)
-        .json({ message: "A friend request already exists between you and this user" });
+        .json({
+          message: "A friend request already exists between you and this user",
+        });
     }
 
     const friendRequest = await FriendRequest.create({
@@ -91,7 +100,9 @@ export async function acceptFriendRequest(req, res) {
 
     // Verify the current user is the recipient
     if (friendRequest.recipient.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You are not authorized to accept this request" });
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to accept this request" });
     }
 
     friendRequest.status = "accepted";
@@ -119,7 +130,10 @@ export async function getFriendRequests(req, res) {
     const incomingReqs = await FriendRequest.find({
       recipient: req.user.id,
       status: "pending",
-    }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
+    }).populate(
+      "sender",
+      "fullName profilePic nativeLanguage learningLanguage"
+    );
 
     const acceptedReqs = await FriendRequest.find({
       sender: req.user.id,
@@ -138,11 +152,103 @@ export async function getOutgoingFriendReqs(req, res) {
     const outgoingRequests = await FriendRequest.find({
       sender: req.user.id,
       status: "pending",
-    }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
+    }).populate(
+      "recipient",
+      "fullName profilePic nativeLanguage learningLanguage"
+    );
 
     res.status(200).json(outgoingRequests);
   } catch (error) {
     console.log("Error in getOutgoingFriendReqs controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getProfileStats(req, res) {
+  try {
+    const userId = req.user.id;
+
+    // Get friends count
+    const user = await User.findById(userId).select("friends");
+    const friendsCount = user?.friends?.length || 0;
+
+    // Get pending requests count
+    const pendingRequests = await FriendRequest.countDocuments({
+      recipient: userId,
+      status: "pending",
+    });
+
+    // For now, we'll set chat and call counts to 0
+    // These can be enhanced later when you implement chat and call tracking
+    const totalChats = 0;
+    const totalCalls = 0;
+
+    res.status(200).json({
+      friendsCount,
+      pendingRequests,
+      totalChats,
+      totalCalls,
+    });
+  } catch (error) {
+    console.log("Error in getProfileStats controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function updateProfile(req, res) {
+  try {
+    const { fullName, bio, nativeLanguage, learningLanguage } = req.body;
+    const userId = req.user.id;
+
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+    if (bio !== undefined) updateData.bio = bio;
+    if (nativeLanguage) updateData.nativeLanguage = nativeLanguage;
+    if (learningLanguage) updateData.learningLanguage = learningLanguage;
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("Error in updateProfile controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function updateProfilePicture(req, res) {
+  try {
+    // This is a placeholder for profile picture upload
+    // You'll need to implement file upload middleware (like multer)
+    // and image storage (like cloudinary or local storage)
+
+    const { profilePic } = req.body;
+    const userId = req.user.id;
+
+    if (!profilePic) {
+      return res
+        .status(400)
+        .json({ message: "Profile picture URL is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic },
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("Error in updateProfilePicture controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }

@@ -7,6 +7,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import CallPage from "./pages/CallPage";
 import ChatPage from "./pages/ChatPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import ProfilePage from "./pages/ProfilePage";
 
 import { Toaster } from "react-hot-toast";
 import PageLoader from "./components/PageLoader.jsx";
@@ -70,21 +71,25 @@ const App = () => {
         />
         <Route
           path="/call/:id"
-          element={isAuthenticated && isOnboarded ? (
-              <CallPage/>
+          element={
+            isAuthenticated && isOnboarded ? (
+              <CallPage />
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )}
+            )
+          }
         />
         <Route
           path="/chat/:id"
-          element={isAuthenticated && isOnboarded ? (
+          element={
+            isAuthenticated && isOnboarded ? (
               <Layout showSidebar={false}>
                 <ChatPage />
               </Layout>
             ) : (
               <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )}
+            )
+          }
         />
         <Route
           path="/onboarding"
@@ -97,6 +102,18 @@ const App = () => {
               )
             ) : (
               <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <Layout showSidebar={true}>
+                <ProfilePage />
+              </Layout>
+            ) : (
+              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
             )
           }
         />
